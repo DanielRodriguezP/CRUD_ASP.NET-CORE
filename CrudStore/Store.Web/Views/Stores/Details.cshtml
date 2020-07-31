@@ -7,7 +7,7 @@
 <h2>Details</h2>
 
 <div>
-    <h4>Stores</h4>
+    <h4>Products</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -17,14 +17,77 @@
             @Html.DisplayFor(model => model.StoreName)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.DateLocal)
+            @Html.DisplayNameFor(model => model.OpeningDate)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.DateLocal)
+            @Html.DisplayFor(model => model.OpeningDate)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @*<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>*@ 
+    <a asp-action="AddProduct" asp-route-id="@Model.Id" class="btn btn-primary">Add Product</a>
+    <a asp-action="Index" class="btn btn-success">Back to List</a>
 </div>
+@if (Model.Products.Count == 0)
+{
+<h4>Not products added yet</h4>
+}
+else
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().SKU)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().Value)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().ImageUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Products)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SKU)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ImageUrl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Store.Id)
+            </td>
+            <td>
+                <a asp-action="EditProduct" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                <a asp-action="DetailsProduct" asp-route-id="@item.Id" class="btn btn-info">Details</a>
+                <a asp-action="DeleteProduct" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+}

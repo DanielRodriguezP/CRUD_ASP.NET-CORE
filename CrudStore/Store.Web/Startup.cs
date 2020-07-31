@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Store.Web.Data;
+using Store.Web.Helpers;
 
 namespace Store.Web
 {
@@ -39,6 +40,7 @@ namespace Store.Web
             });
 
             services.AddTransient<SeedDb>();
+            services.AddScoped<ICombosHelper, CombosHelper>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

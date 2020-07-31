@@ -17,7 +17,7 @@ namespace Store.Web.Data.Entities
         public string StoreName { get; set; }
 
         [Required(ErrorMessage = "The field {0} is mandatory.")]
-        [DataType(DataType.DateTime)]
+        //[DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Opening Date")]
         public DateTime OpeningDate { get; set; }
