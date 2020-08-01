@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,19 @@ namespace Store.Web.Controllers
     {
         private readonly DataContext _context;
         private readonly ICombosHelper _combosHelper;
+        private readonly IConverterHelper _converterHelper;
+        private readonly IImageHelper _imageHelper;
 
-        public StoresController(DataContext context, ICombosHelper combosHelper)
+        public StoresController(
+            DataContext context, 
+            ICombosHelper combosHelper, 
+            IConverterHelper converterHelper, 
+            IImageHelper imageHelper)
         {
             _context = context;
             _combosHelper = combosHelper;
+            _converterHelper = converterHelper;
+            _imageHelper = imageHelper;
         }
 
         // GET: Stores
@@ -100,28 +109,56 @@ namespace Store.Web.Controllers
                 var path = string.Empty;
                 if (model.ImageFile != null)
                 {
-                    var guid = Guid.NewGuid().ToString();
-                    var file = $"{guid}.jpg";
-
-                    path = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot\\images\\Products",
-                        file);
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await model.ImageFile.CopyToAsync(stream);
-                    }
-                    path = $"~/images/Products/{file}";
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile);
                 }
+
+                var product = await _converterHelper.ToProductAsync(model, path, true);
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction($"Details/{model.StoreId}");
             }
 
            return View(model);
         }
 
+        public async Task<IActionResult> EditProduct(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            var product = await _context.Products
+                .Include(s => s.Store)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
 
+             return View(_converterHelper.ToProductViewModel(product));
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> EditProduct(ProductViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var path = model.ImageUrl;
+                if (model.ImageFile != null)
+                {
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile);
+                }
 
+                var product = await _converterHelper.ToProductAsync(model, path, false);
+                _context.Products.Update(product);
+                await _context.SaveChangesAsync();
+                return RedirectToAction($"Details/{model.StoreId}");
+
+            }
+
+            return View(model);
+        }
 
         // GET: Stores/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -175,33 +212,52 @@ namespace Store.Web.Controllers
         }
 
         // GET: Stores/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> DeleteStore(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var stores = await _context.Stores
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var stores = await _context.Stores.
+                Include(p => p.Products)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (stores == null)
             {
                 return NotFound();
             }
-
-            return View(stores);
-        }
-
-        // POST: Stores/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var stores = await _context.Stores.FindAsync(id);
+            if (stores.Products.Count > 0)
+            {
+                ModelState.AddModelError(string.Empty, "The Store can't be deleted because it has related records.");
+                return RedirectToAction(nameof(Index));
+            }
             _context.Stores.Remove(stores);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+
         }
+
+        public async Task<IActionResult> DeleteProduct(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Products
+                .Include(h => h.Store)
+                .FirstOrDefaultAsync(h => h.Id == id.Value);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+            return RedirectToAction($"{nameof(Details)}/{product.Store.Id}");
+               
+        }
+
 
         private bool StoresExists(int id)
         {

@@ -24,10 +24,9 @@ namespace Store.Web.Data.Entities
         public string Description { get; set; }
 
         [Required(ErrorMessage = "The field {0} is mandatory.")]
-        //[MaxLength(15, ErrorMessage = "The {0} field can not have more than {1} characters.")]
         public int Value { get; set; }
 
-        [Required(ErrorMessage = "The field {0} is mandatory.")]
+        //[Required(ErrorMessage = "The field {0} is mandatory.")]
         [Display(Name = "Image Url")]
         public string ImageUrl { get; set; }
 
