@@ -9,6 +9,9 @@
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
+
+<div asp-validation-summary="ModelOnly"></div>
+
 <table class="table">
     <thead>
         <tr>
@@ -18,7 +21,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.OpeningDate)
             </th>
-           <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -40,6 +43,10 @@
         }
     </tbody>
 </table>
+<p>
+
+</p>
+
 
 <partial name="_DeleteDialog" />
 
@@ -61,4 +68,5 @@
         });
     </script>
 }
+
 

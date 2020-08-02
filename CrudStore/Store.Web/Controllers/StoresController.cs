@@ -17,19 +17,19 @@ namespace Store.Web.Controllers
     public class StoresController : Controller
     {
         private readonly DataContext _context;
-        private readonly ICombosHelper _combosHelper;
         private readonly IConverterHelper _converterHelper;
+        private readonly ICombosHelper _combosHelper;
         private readonly IImageHelper _imageHelper;
 
         public StoresController(
             DataContext context, 
-            ICombosHelper combosHelper, 
-            IConverterHelper converterHelper, 
+            IConverterHelper converterHelper,
+            ICombosHelper combosHelper,
             IImageHelper imageHelper)
         {
             _context = context;
-            _combosHelper = combosHelper;
             _converterHelper = converterHelper;
+            _combosHelper = combosHelper;
             _imageHelper = imageHelper;
         }
 
@@ -92,13 +92,13 @@ namespace Store.Web.Controllers
             {
                 return NotFound();
             }
-
             var model = new ProductViewModel
             {
                 StoreId = stores.Id,
                 Stores = _combosHelper.GetComboStores()
             };
-             return View(model);
+
+            return View(model);
         }
 
         [HttpPost]
@@ -255,9 +255,8 @@ namespace Store.Web.Controllers
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             return RedirectToAction($"{nameof(Details)}/{product.Store.Id}");
-               
-        }
 
+        }
 
         private bool StoresExists(int id)
         {

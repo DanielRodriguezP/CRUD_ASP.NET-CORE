@@ -80,6 +80,7 @@ else
                     <td>
                         <a asp-action="EditProduct" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
                         <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog">Delete</button>
+                       
                     </td>
                 </tr>
             }
@@ -92,6 +93,8 @@ else
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
+
+
     <script type="text/javascript">
         $(document).ready(function () {
             // Delete item
@@ -102,8 +105,12 @@ else
             });
 
             $("#btnYesDelete").click(function () {
+
                 window.location.href = '/Stores/DeleteProduct/' + item_to_delete;
             });
+
         });
+            
+           
     </script>
 }

@@ -29,7 +29,7 @@ namespace Store.Web.Helpers
                 Text = "[Select a store]",
                 Value = "0"
             });
-            
+
             return list;
         }
     }

@@ -11,4 +11,3 @@ namespace Store.Web.Helpers
         IEnumerable<SelectListItem> GetComboStores();
     }
 }
-
