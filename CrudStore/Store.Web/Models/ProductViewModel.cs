@@ -13,7 +13,7 @@ namespace Store.Web.Models
     {
         public int ProductId { get; set; }
 
-        [Required(ErrorMessage = "The field {0} is mandatory.")]
+        [Required(ErrorMessage = "The field {0} is mandatory ok?.")]
         [Display(Name = "Store Id")]
         [Range(1, int.MaxValue, ErrorMessage = "You must select a pet type.")]
         public int StoreId { get; set; }
